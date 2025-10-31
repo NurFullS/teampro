@@ -1,11 +1,18 @@
-import React from 'react'
+'use client'
 
-const page = () => {
+import React, { useEffect, useState } from 'react'
+import Header from './features/Header'
+import Main from '../app/features/Main'
+
+const Page = () => {
+  
+
   return (
-    <div>
-      
-    </div>
+    <>
+      <Header />
+      <Main />
+    </>
   )
 }
 
-export default page
+export default Page

@@ -18,17 +18,12 @@ const Page = () => {
   const onSubmit = async (data: FieldValues) => {
     try {
       const response = await api.post('/auth/login', data)
-
-      toast.success('Вход выполнен успешно!', { position: 'top-center', duration: 4000 })
-
       reset()
       router.push('/')
     } catch (error: any) {
       if (error.response) {
-        console.error('Login error:', error.response.data)
         toast.error(error.response.data?.message || 'Ошибка при входе', { position: 'top-center', duration: 4000 })
       } else {
-        console.error('Login error:', error.message)
         toast.error('Сервер недоступен или ошибка сети', { position: 'top-center', duration: 4000 })
       }
     }
@@ -42,7 +37,6 @@ const Page = () => {
         className="flex flex-col gap-3 max-w-sm w-full p-4 rounded shadow"
       >
         <h2 className="text-2xl font-bold text-center mb-2">Войдите в аккаунт</h2>
-
         <input
           type="text"
           placeholder="Email"
@@ -56,7 +50,6 @@ const Page = () => {
           className="border p-2 rounded border-gray-400 outline-none focus:border-blue-500"
         />
         {errors.email && <span className="text-red-500 text-sm">{String(errors.email?.message)}</span>}
-
         <input
           type="password"
           placeholder="Пароль"

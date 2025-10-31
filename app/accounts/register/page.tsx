@@ -1,6 +1,7 @@
 'use client'
 
 import api from '@/app/api/api'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useForm, FieldValues } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
@@ -13,6 +14,8 @@ const Page = () => {
         reset,
     } = useForm<FieldValues>()
 
+    const router = useRouter()
+
     const onSubmit = async (data: FieldValues) => {
         try {
             const response = await api.post('/auth/register', data)
@@ -22,6 +25,7 @@ const Page = () => {
                 position: 'top-center',
             })
             reset()
+            router.replace('/accounts/login')
         } catch (error: any) {
             if (error.response) {
                 console.error('Registration error:', error.response.data)
@@ -52,7 +56,7 @@ const Page = () => {
                 <input
                     type="text"
                     placeholder="Имя"
-                    {...register('name', {
+                    {...register('username', {
                         required: 'Введите имя',
                         minLength: {
                             value: 3,
