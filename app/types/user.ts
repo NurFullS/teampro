@@ -3,4 +3,6 @@ export type UserT = {
     email: string
     username: string
     role: string
+    workerStatus: string
+    userStatus: string
 }

@@ -7,6 +7,7 @@ import api from '../api/api'
 import { UserT } from '../types/user'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { ClipLoader } from 'react-spinners'
 
 const Main = () => {
   const router = useRouter()
@@ -25,7 +26,7 @@ const Main = () => {
     fetchUser()
   }, [])
 
-  if (!user) return <p className="text-center mt-10">Загрузка...</p>
+  if (!user) return <p className="text-center flex justify-center items-center mt-20"><ClipLoader /></p>
 
   return (
     <div className="flex flex-col items-center text-center mt-16 px-4">
@@ -37,21 +38,21 @@ const Main = () => {
         и взаимодействовать с командой. Мы поможем вам оставаться организованным и эффективным 💪
       </p>
 
-          {user.role === 'teamlead' ? (
-            <button
-              onClick={() => router.push('/projects')}
-              className="bg-blue-600 hover:bg-blue-700 transition-colors p-3 px-4 text-white shadow-md cursor-pointer rounded-2xl"
-            >
-              Начать работу
-            </button>
-          ) : (
-            <button
-              onClick={() => router.push('/projects')}
-              className="bg-green-600 hover:bg-green-700 transition-colors p-3 text-white shadow-md cursor-pointer rounded-2xl"
-            >
-              Перейти к задачам
-            </button>
-          )}
+      {user.role === 'teamlead' ? (
+        <button
+          onClick={() => router.push('/projects')}
+          className="bg-blue-600 hover:bg-blue-700 transition-colors p-3 px-4 text-white shadow-md cursor-pointer rounded-2xl"
+        >
+          Начать работу
+        </button>
+      ) : (
+        <button
+          onClick={() => router.push('/projects')}
+          className="bg-green-600 hover:bg-green-700 transition-colors p-3 text-white shadow-md cursor-pointer rounded-2xl"
+        >
+          Перейти к задачам
+        </button>
+      )}
       <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-10 w-full max-w-5xl">
         <div className="flex flex-col items-center md:items-start">
           <h2 className="text-xl font-semibold mb-3 text-blue-700">
@@ -67,8 +68,9 @@ const Main = () => {
           src={mainPreview}
           alt="Главная иллюстрация"
           className="w-full h-auto max-w-md"
-          priority
+          loading="lazy"
         />
+
       </div>
     </div>
   )

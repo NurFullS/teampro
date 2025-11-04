@@ -19,7 +19,7 @@ const Page = () => {
     try {
       const response = await api.post('/auth/login', data)
       reset()
-      router.push('/')
+      router.replace('/')
     } catch (error: any) {
       if (error.response) {
         toast.error(error.response.data?.message || 'Ошибка при входе', { position: 'top-center', duration: 4000 })
@@ -34,7 +34,7 @@ const Page = () => {
       <Toaster />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-3 max-w-sm w-full p-4 rounded shadow"
+        className="flex flex-col gap-3 max-w-sm w-full border border-gray-200 p-6 rounded shadow"
       >
         <h2 className="text-2xl font-bold text-center mb-2">Войдите в аккаунт</h2>
         <input
@@ -52,11 +52,14 @@ const Page = () => {
         {errors.email && <span className="text-red-500 text-sm">{String(errors.email?.message)}</span>}
         <input
           type="password"
-          placeholder="Пароль"
           {...register('password', {
             required: 'Введите пароль',
-            minLength: { value: 6, message: 'Пароль должен быть больше 6 символов' },
+            minLength: {
+              value: 6,
+              message: 'Пароль должен быть не менее 6 символов',
+            },
           })}
+          placeholder="Пароль"
           className="border p-2 rounded border-gray-400 outline-none focus:border-blue-500"
         />
         {errors.password && <span className="text-red-500 text-sm">{String(errors.password?.message)}</span>}

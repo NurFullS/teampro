@@ -7,7 +7,7 @@ import toast, { Toaster } from 'react-hot-toast'
 import { UserT } from '../types/user'
 import { ClipLoader } from 'react-spinners'
 import Projects from './projects/Projects'
-import DevProjects from './DevProjects'
+import DevProjects from './projects/DevProjects'
 import Header from '../features/Header'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

@@ -4,6 +4,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import api from '../../api/api'
 import toast, { Toaster } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Trash, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const Projects = () => {
     const [projects, setProjects] = useState<any[]>([])
@@ -13,8 +15,8 @@ const Projects = () => {
     const [newProjectDesc, setNewProjectDesc] = useState('')
     const [selectedStatus, setSelectedStatus] = useState('working')
     const toastShown = useRef(false)
+    const router = useRouter()
 
-    // Получение проектов пользователя
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -29,23 +31,20 @@ const Projects = () => {
                 setLoading(false)
             }
         }
-
         fetchProjects()
     }, [])
 
-    // Создание проекта
     const handleCreateProject = async () => {
         if (!newProjectName) return toast.error('Введите название проекта')
 
         try {
             const res = await api.post(
                 '/projects',
+                { name: newProjectName, description: newProjectDesc, status: selectedStatus },
                 {
-                    name: newProjectName,
-                    description: newProjectDesc,
-                    status: selectedStatus,
-                },
-                { withCredentials: true } // cookie автоматически отправляется
+                    withCredentials: true,
+                    headers: { 'Content-Type': 'application/json' }
+                }
             )
 
             setProjects([...projects, res.data])
@@ -59,6 +58,16 @@ const Projects = () => {
         }
     }
 
+    const deleteProject = async (id: number) => {
+        try {
+            await api.delete(`/projects/delete/${id}`, { withCredentials: true })
+            setProjects(projects.filter(p => p.id !== id))
+            toast.success('Проект удален', { position: 'top-center', duration: 2000 })
+        } catch (err) {
+            toast.error('Не удалось удалить проект', { position: 'top-center', duration: 3000 })
+        }
+    }
+
     if (loading)
         return (
             <div className="flex justify-center items-center h-64">
@@ -68,62 +77,79 @@ const Projects = () => {
 
     const getStatusProps = (status: string) => {
         switch (status) {
-            case 'working':
-                return { text: 'Работает', color: 'bg-green-200 text-green-800' }
-            case 'progress':
-                return { text: 'В прогрессе', color: 'bg-yellow-200 text-yellow-800' }
-            case 'stopped':
-                return { text: 'Не работает', color: 'bg-red-200 text-red-800' }
-            default:
-                return { text: 'Неизвестно', color: 'bg-gray-200 text-gray-800' }
+            case 'working': return { text: 'Работает', color: 'bg-green-200 text-green-800' }
+            case 'progress': return { text: 'В прогрессе', color: 'bg-yellow-200 text-yellow-800' }
+            case 'stopped': return { text: 'Не работает', color: 'bg-red-200 text-red-800' }
+            default: return { text: 'Неизвестно', color: 'bg-gray-200 text-gray-800' }
         }
     }
 
+    const handleProjectClick = (id: number) => {
+        router.push(`/project/${id}`)
+    }
+
     return (
-        <div className="border-l p-6 bg-gray-50 relative min-h-screen">
+        <div className="border-l p-6 bg-gray-50 flex flex-col">
             <Toaster />
 
-            {/* Кнопка создания проекта */}
             <div className="flex justify-end mb-4">
                 <button
                     onClick={() => setShowModal(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                    className="px-4 flex shadow-md gap-1 items-center font-medium cursor-pointer py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
                 >
-                    Создать проект
+                    <Plus /> Создать проект
                 </button>
             </div>
 
-            {/* Список проектов */}
-            {projects.length === 0 && (
-                <div className="text-center mt-20">
+            {projects.length === 0 && !loading && (
+                <div className="flex flex-col items-center justify-center mt-20">
                     <p className="text-lg mb-4 text-gray-700">У вас пока что нет проектов!</p>
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    >
+                        Создать первый проект
+                    </button>
                 </div>
             )}
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
-                {projects.map((project: any, index: number) => {
-                    const status = getStatusProps(project.status)
-                    return (
-                        <div key={project.id || index} className="p-5 border rounded-xl shadow hover:shadow-lg transition bg-white">
-                            <h2 className="text-xl font-semibold mb-2 text-gray-800">{project.name}</h2>
-                            <p className="text-gray-600 mb-2">{project.description}</p>
-                            <span className={`px-2 py-1 rounded text-sm ${status.color}`}>{status.text}</span>
-                        </div>
-                    )
-                })}
+            {projects.length > 0 && (
+                <div className="flex justify-center mt-6">
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
+                        {projects.map((project: any) => {
+                            const status = getStatusProps(project.status)
+                            return (
+                                <div
+                                    key={project.id}
+                                    onClick={() => handleProjectClick(project.id)}
+                                    className="p-5 flex flex-col border border-gray-300 rounded-xl shadow hover:shadow-lg cursor-pointer transition bg-white"
+                                >
+                                    <h2 className="text-xl font-semibold mb-2 text-gray-800">{project.name}</h2>
+                                    <p className="text-gray-600 mb-2 w-85">{project.description}</p>
+                                    <div className="flex justify-between items-center mt-auto">
+                                    <span className={`px-2 py-1 text-center font-medium rounded text-sm ${status.color}`}>{status.text}</span>
 
-            </div>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); deleteProject(project.id) }}
+                                        >
+                                            <Trash className="text-red-600 cursor-pointer" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            )}
 
-            {/* Модальное окно */}
             <AnimatePresence>
                 {showModal && (
                     <motion.div
-                        className="fixed inset-0 flex items-center justify-center z-50"
+                        className="fixed inset-0 flex items-center justify-center z-50 overflow-y-auto"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                     >
-                        {/* Фон с блюром */}
                         <motion.div
                             className="absolute inset-0 backdrop-blur-sm bg-black/30"
                             initial={{ opacity: 0 }}
@@ -131,7 +157,6 @@ const Projects = () => {
                             exit={{ opacity: 0 }}
                         ></motion.div>
 
-                        {/* Контент модалки */}
                         <motion.div
                             className="relative z-10 bg-white rounded-xl p-6 w-11/12 max-w-md shadow-lg"
                             initial={{ scale: 0.9 }}
@@ -143,19 +168,21 @@ const Projects = () => {
                                 type="text"
                                 placeholder="Название проекта"
                                 value={newProjectName}
+                                maxLength={16}
                                 onChange={(e) => setNewProjectName(e.target.value)}
                                 className="w-full p-3 border border-gray-400 rounded mb-4 outline-none focus:border-blue-500"
                             />
                             <textarea
                                 placeholder="Описание проекта"
                                 value={newProjectDesc}
+                                maxLength={100}
                                 onChange={(e) => setNewProjectDesc(e.target.value)}
-                                className="w-full p-3 border border-gray-400 rounded mb-4 focus:border-blue-500"
-                            ></textarea>
+                                className="w-full p-3 outline-none border border-gray-400 rounded mb-4 focus:border-blue-500"
+                            />
                             <select
                                 value={selectedStatus}
                                 onChange={(e) => setSelectedStatus(e.target.value)}
-                                className="w-full p-2 mb-5 border border-gray-400 rounded focus:border-blue-500"
+                                className="w-full outline-none p-2 mb-5 border border-gray-400 rounded focus:border-blue-500"
                             >
                                 <option value="working">Работает</option>
                                 <option value="progress">В прогрессе</option>
@@ -164,13 +191,13 @@ const Projects = () => {
                             <div className="flex justify-end gap-3">
                                 <button
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
+                                    className="px-4 py-2 cursor-pointer bg-gray-300 rounded hover:bg-gray-400 transition"
                                 >
                                     Отмена
                                 </button>
                                 <button
                                     onClick={handleCreateProject}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                    className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                 >
                                     Создать
                                 </button>
