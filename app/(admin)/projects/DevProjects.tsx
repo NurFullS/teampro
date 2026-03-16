@@ -44,7 +44,7 @@ const DevProjects = () => {
   }, [])
 
   const joinProject = async () => {
-    if (!projectName || !accessCode)
+    if (!accessCode)
       return toast.error('Введите название и код проекта')
 
     try {
@@ -52,12 +52,11 @@ const DevProjects = () => {
         'http://localhost:8080/projects/join',
         null,
         {
-          params: { projectName, accessCode },
+          params: { accessCode },
           withCredentials: true
         }
       )
       toast.success(response.data, { position: 'top-center' })
-      setProjectName('')
       setAccessCode('')
       setShowModal(false)
       fetchProjects()
@@ -173,15 +172,6 @@ const DevProjects = () => {
               <h2 className="text-2xl font-bold mb-4 text-center">
                 Присоединиться к проекту
               </h2>
-
-              <input
-                type="text"
-                placeholder="Название проекта"
-                value={projectName}
-                maxLength={30}
-                onChange={(e) => setProjectName(e.target.value)}
-                className="w-full p-3 border border-gray-400 rounded mb-4 outline-none focus:border-blue-500"
-              />
               <input
                 type="text"
                 placeholder="Код проекта"

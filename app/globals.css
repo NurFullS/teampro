@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: 'Clear Sans';
+  src: url('../public/fonts//ClearSansInfanity-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

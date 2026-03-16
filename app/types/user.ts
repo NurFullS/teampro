@@ -5,4 +5,5 @@ export type UserT = {
     role: string
     workerStatus: string
     userStatus: string
+    tarifPlane: string
 }

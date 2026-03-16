@@ -6,9 +6,11 @@ import toast, { Toaster } from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash, Plus } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ProjectT } from '@/app/types/project'
+import { memo } from 'react'
 
 const Projects = () => {
-    const [projects, setProjects] = useState<any[]>([])
+    const [projects, setProjects] = useState<ProjectT[]>([])
     const [loading, setLoading] = useState(true)
     const [showModal, setShowModal] = useState(false)
     const [newProjectName, setNewProjectName] = useState('')
@@ -125,9 +127,12 @@ const Projects = () => {
                                     className="p-5 flex flex-col border border-gray-300 rounded-xl shadow hover:shadow-lg cursor-pointer transition bg-white"
                                 >
                                     <h2 className="text-xl font-semibold mb-2 text-gray-800">{project.name}</h2>
-                                    <p className="text-gray-600 mb-2 w-85">{project.description}</p>
+                                    {project.description && project.description.length > 0
+                                        ? <p className="text-gray-600 mb-2">{project.description}</p>
+                                        : <p className="text-gray-600 mb-2 italic">Описание отсутствует</p>
+                                    }
                                     <div className="flex justify-between items-center mt-auto">
-                                    <span className={`px-2 py-1 text-center font-medium rounded text-sm ${status.color}`}>{status.text}</span>
+                                        <span className={`px-2 py-1 text-center font-medium rounded text-sm ${status.color}`}>{status.text}</span>
 
                                         <button
                                             onClick={(e) => { e.stopPropagation(); deleteProject(project.id) }}

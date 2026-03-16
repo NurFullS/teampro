@@ -11,7 +11,6 @@ const Header = () => {
     const [user, setUser] = useState<UserT | null>(null)
     const [status, setStatus] = useState('')
 
-    // Получаем текущего пользователя
     useEffect(() => {
         const fetchUser = async () => {
             try {
@@ -25,7 +24,6 @@ const Header = () => {
         fetchUser()
     }, [])
 
-    // Обновляем статус на сервере
     const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newStatus = e.target.value
         setStatus(newStatus)
@@ -39,7 +37,6 @@ const Header = () => {
         }
     }
 
-    // Цвет текста в зависимости от статуса
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'working': return 'text-green-600'
@@ -62,7 +59,7 @@ const Header = () => {
         <header>
             <div className="w-full flex bg-blue-600 shadow-2xl justify-between items-center">
                 <Link href="/projects">
-                    <h1 className="items-center cursor-pointer p-4 text-white text-2xl font-medium">
+                    <h1 className="items-center font-bold cursor-pointer p-4 text-white text-2xl">
                         TeamPro
                     </h1>
                 </Link>
